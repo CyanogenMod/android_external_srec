@@ -939,11 +939,15 @@ SWIsltsResult free_lts(LTS_HANDLE hlts)
 int find_phone(const char *ph, PM *pm)
 {
   ESR_ReturnCode rc;
-  int iRet = -1;
-  rc = PHashTableGetValue((PHashTable*)pm->phoneH, ph, (void**)(void*)&iRet);
+  union {
+	  void *v;
+	  int i;
+  } iRet;
+  iRet.i = -1;
+  rc = PHashTableGetValue((PHashTable*)pm->phoneH, ph, &iRet.v);
   if (rc != ESR_SUCCESS) 
     PLogError("error while in find_phone(%s,%x)\n", ph, pm);
-  return iRet;
+  return iRet.i;
 }
 
 int find_best_string(const char *str, LTS* lts) 
