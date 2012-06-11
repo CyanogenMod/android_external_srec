@@ -1,0 +1,9 @@
+Change-Id: I30ebde6fb78d1c603387bcf700127c1152b1085a
+Code-Review+2: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
+Verified+1: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
+Code-Review+1: Bernhard Rosenkraenzer <Bernhard.Rosenkranzer@linaro.org>
+Submitted-by: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
+Submitted-at: Mon, 11 Jun 2012 15:25:49 +0400
+Reviewed-on: http://review.cyanogenmod.com/17374
+Project: CyanogenMod/android_external_srec
+Branch: refs/heads/ics
