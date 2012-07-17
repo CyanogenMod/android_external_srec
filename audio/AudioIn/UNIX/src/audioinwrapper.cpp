@@ -95,16 +95,20 @@ int AudioOpen(void)
         audio_data = fopen ( file_name, "w" );
     #endif
 // TODO: get record buffer size from hardware.
+    android::AudioRecord::callback_t cbf = NULL;
     record = new android::AudioRecord(
                             AUDIO_SOURCE_DEFAULT,
                             sampleRate,
                             AUDIO_FORMAT_PCM_16_BIT,
                             (numChannels > 1) ? AUDIO_CHANNEL_IN_STEREO : AUDIO_CHANNEL_IN_MONO,
-                            8*1024);
+                            8*1024,
+                            cbf,
+                            0,
+                            0);
   
   if (!record) return -1;
   
-  return record->start() == NO_ERROR ? 0 : -1;
+  return record->start(android::AudioSystem::SYNC_EVENT_NONE,0) == NO_ERROR ? 0 : -1;
 #endif
 }
 
@@ -146,7 +150,7 @@ int AudioRead(short *buffer, int frame_count)
 #endif
 }
 
-int AudioSetVolume(int stream_type, int volume)
+int AudioSetVolume(audio_stream_type_t stream_type, float volume)
 {
 #if defined(USE_DEV_EAC_FILE)
   return 0;
@@ -155,7 +159,7 @@ int AudioSetVolume(int stream_type, int volume)
 #endif
 }
 
-int AudioGetVolume(int stream_type)
+int AudioGetVolume(audio_stream_type_t stream_type)
 {
 #if defined(USE_DEV_EAC_FILE)
   return 0;
@@ -203,12 +207,12 @@ int AudioSetStreamType(int stream_type)
   return -1;
 }
 
-int AudioSetVolume(int stream_type, int volume)
+int AudioSetVolume(audio_stream_type_t stream_type, float volume)
 {
   return -1;
 }
 
-int AudioGetVolume(int stream_type)
+int AudioGetVolume(audio_stream_type_t stream_type)
 {
   return -1;
 }
