@@ -96,9 +96,9 @@ int AudioOpen(void)
     #endif
 // TODO: get record buffer size from hardware.
     record = new android::AudioRecord(
-                            AUDIO_SOURCE_DEFAULT,
+                            (audio_source_t)AUDIO_SOURCE_DEFAULT,
                             sampleRate,
-                            AUDIO_FORMAT_PCM_16_BIT,
+                            (audio_format_t)AUDIO_FORMAT_PCM_16_BIT,
                             (numChannels > 1) ? AUDIO_CHANNEL_IN_STEREO : AUDIO_CHANNEL_IN_MONO,
                             8*1024,
                             (android::AudioRecord::record_flags) 0);
@@ -152,7 +152,7 @@ int AudioSetVolume(int stream_type, int volume)
 #if defined(USE_DEV_EAC_FILE)
   return 0;
 #else
-  return AudioSystem::setStreamVolume(stream_type, volume, 0);
+  return AudioSystem::setStreamVolume((audio_stream_type_t)stream_type, volume, (audio_io_handle_t)0);
 #endif
 }
 
@@ -162,7 +162,7 @@ int AudioGetVolume(int stream_type)
   return 0;
 #else
   float v = 0;
-  AudioSystem::getStreamVolume(stream_type, &v, 0);
+  AudioSystem::getStreamVolume((audio_stream_type_t)stream_type, &v, (audio_io_handle_t)0);
   return int(v * 100.0f);
 #endif
 }
