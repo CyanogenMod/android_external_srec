@@ -22,10 +22,11 @@ LOCAL_CFLAGS += \
 	$(ASR_GLOBAL_CPPFLAGS) \
 
 LOCAL_STATIC_LIBRARIES := \
-        libESR_Portable
+        libESR_Portable 
 
 LOCAL_SHARED_LIBRARIES := \
-        liblog
+        liblog \
+        libmedia
 
 LOCAL_MODULE:= libSR_AudioIn
 
