@@ -115,8 +115,8 @@ class ComposeFstImplBase : public CacheImpl<A> {
       LOG(FATAL) << "ComposeFst: output symbol table of 1st argument "
                  << "does not match input symbol table of 2nd argument";
 
-    SetInputSymbols(fst1.InputSymbols());
-    SetOutputSymbols(fst2.OutputSymbols());
+    this->SetInputSymbols(fst1.InputSymbols());
+    this->SetOutputSymbols(fst2.OutputSymbols());
   }
 
   virtual ~ComposeFstImplBase() {
@@ -128,7 +128,7 @@ class ComposeFstImplBase : public CacheImpl<A> {
     if (!HasStart()) {
       StateId start = ComputeStart();
       if (start != kNoStateId) {
-        SetStart(start);
+        this->SetStart(start);
       }
     }
     return CacheImpl<A>::Start();
@@ -136,8 +136,8 @@ class ComposeFstImplBase : public CacheImpl<A> {
 
   Weight Final(StateId s) {
     if (!HasFinal(s)) {
-      Weight final = ComputeFinal(s);
-      SetFinal(s, final);
+      Weight final = this->ComputeFinal(s);
+      this->SetFinal(s, final);
     }
     return CacheImpl<A>::Final(s);
   }
@@ -146,25 +146,25 @@ class ComposeFstImplBase : public CacheImpl<A> {
 
   size_t NumArcs(StateId s) {
     if (!HasArcs(s))
-      Expand(s);
+      this->Expand(s);
     return CacheImpl<A>::NumArcs(s);
   }
 
   size_t NumInputEpsilons(StateId s) {
     if (!HasArcs(s))
-      Expand(s);
+      this->Expand(s);
     return CacheImpl<A>::NumInputEpsilons(s);
   }
 
   size_t NumOutputEpsilons(StateId s) {
     if (!HasArcs(s))
-      Expand(s);
+      this->Expand(s);
     return CacheImpl<A>::NumOutputEpsilons(s);
   }
 
   void InitArcIterator(StateId s, ArcIteratorData<A> *data) {
     if (!HasArcs(s))
-      Expand(s);
+      this->Expand(s);
     CacheImpl<A>::InitArcIterator(s, data);
   }
 
@@ -496,11 +496,11 @@ class ComposeFstImpl : public ComposeFstImplBase<A> {
           const A &arcb = aiterb.Value();
           Label labelb = find_input ? arcb.olabel : arcb.ilabel;
           if (labelb <= 0) continue;
-          AddArc(s, arca, arcb, 0, find_input);
+          this->AddArc(s, arca, arcb, 0, find_input);
         }
       } else if (f == 0 && match_labela == 0) {
         A earcb(0, 0, Weight::One(), sb);
-        AddArc(s, arca, earcb, 0, find_input);  // move forward on epsilon
+        this->AddArc(s, arca, earcb, 0, find_input);  // move forward on epsilon
       }
     }
     // Next handle non-epsilon matches, rho labels, and epsilons on FSTB
@@ -516,7 +516,7 @@ class ComposeFstImpl : public ComposeFstImplBase<A> {
             Label match_labela = find_input ? arca.ilabel : arca.olabel;
             if (match_labela != match_labelb)
               break;
-            AddArc(s, arca, arcb, 0, find_input);  // move forward on match
+            this->AddArc(s, arca, arcb, 0, find_input);  // move forward on match
           }
         } else if ((T & COMPOSE_SPECIAL_SYMBOLS) != 0) {
           // If there is no transition labelled 'match_labelb' in
@@ -542,7 +542,7 @@ class ComposeFstImpl : public ComposeFstImplBase<A> {
                 if (FindLabel(&aiterf, numarcsf, match_labelb, find_input)) {
                   // Sub-case 1a: there exists a transition starting
                   // in sf and consuming symbol 'match_labelb'.
-                  AddArc(s, aiterf.Value(), arcb, 0, find_input);
+                  this->AddArc(s, aiterf.Value(), arcb, 0, find_input);
                   break;
                 } else {
                   // No transition labelled 'match_labelb' found: try
@@ -560,7 +560,7 @@ class ComposeFstImpl : public ComposeFstImplBase<A> {
                 // transition. Therefore, we generate a loop in start
                 // state of fsta.
                 A loop(match_labelb, match_labelb, Weight::One(), sf);
-                AddArc(s, loop, arcb, 0, find_input);
+                this->AddArc(s, loop, arcb, 0, find_input);
               }
             } else if (((T & COMPOSE_RHO) != 0) && (labela == kRhoLabel)) {
               // Case 2: 'match_labelb' can be matched against a
@@ -574,16 +574,16 @@ class ComposeFstImpl : public ComposeFstImplBase<A> {
                 if (arca.ilabel == kRhoLabel)
                   arca.ilabel = match_labelb;
               }
-              AddArc(s, arca, arcb, 0, find_input);  // move fwd on match
+              this->AddArc(s, arca, arcb, 0, find_input);  // move fwd on match
             }
           }
         }
       } else if (numepsa != numarcsa || finala) {  // Handle FSTB epsilon
         A earca(0, 0, Weight::One(), sa);
-        AddArc(s, earca, arcb, numepsa > 0, find_input);  // move on epsilon
+        this->AddArc(s, earca, arcb, numepsa > 0, find_input);  // move on epsilon
       }
     }
-    SetArcs(s);
+    this->SetArcs(s);
    }
 
 

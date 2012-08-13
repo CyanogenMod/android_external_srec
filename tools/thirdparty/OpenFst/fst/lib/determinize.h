@@ -148,7 +148,7 @@ class DeterminizeFstImplBase : public CacheImpl<A> {
     if (!HasStart()) {
       StateId start = ComputeStart();
       if (start != kNoStateId) {
-        SetStart(start);
+        this->SetStart(start);
       }
     }
     return CacheImpl<A>::Start();
@@ -157,7 +157,7 @@ class DeterminizeFstImplBase : public CacheImpl<A> {
   Weight Final(StateId s) {
     if (!HasFinal(s)) {
       Weight final = ComputeFinal(s);
-      SetFinal(s, final);
+      this->SetFinal(s, final);
     }
     return CacheImpl<A>::Final(s);
   }
@@ -166,25 +166,25 @@ class DeterminizeFstImplBase : public CacheImpl<A> {
 
   size_t NumArcs(StateId s) {
     if (!HasArcs(s))
-      Expand(s);
+      this->Expand(s);
     return CacheImpl<A>::NumArcs(s);
   }
 
   size_t NumInputEpsilons(StateId s) {
     if (!HasArcs(s))
-      Expand(s);
+      this->Expand(s);
     return CacheImpl<A>::NumInputEpsilons(s);
   }
 
   size_t NumOutputEpsilons(StateId s) {
     if (!HasArcs(s))
-      Expand(s);
+      this->Expand(s);
     return CacheImpl<A>::NumOutputEpsilons(s);
   }
 
   void InitArcIterator(StateId s, ArcIteratorData<A> *data) {
     if (!HasArcs(s))
-      Expand(s);
+      this->Expand(s);
     CacheImpl<A>::InitArcIterator(s, data);
   }
 
@@ -294,7 +294,7 @@ class DeterminizeFsaImpl : public DeterminizeFstImplBase<A> {
          liter != label_map.end();
          ++liter)
       AddArc(s, liter->first, liter->second);
-    SetArcs(s);
+    this->SetArcs(s);
   }
 
  private:
