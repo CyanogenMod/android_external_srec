@@ -166,8 +166,8 @@ class FactorWeightFstImpl
     uint64 props = fst.Properties(kFstProperties, false);
     SetProperties(FactorWeightProperties(props), kCopyProperties);
 
-    this->SetInputSymbols(fst.InputSymbols());
-    this->SetOutputSymbols(fst.OutputSymbols());
+    SetInputSymbols(fst.InputSymbols());
+    SetOutputSymbols(fst.OutputSymbols());
   }
 
   ~FactorWeightFstImpl() {
@@ -180,7 +180,7 @@ class FactorWeightFstImpl
       if (s == kNoStateId)
         return kNoStateId;
       StateId start = FindState(Element(fst_->Start(), Weight::One()));
-      this->SetStart(start);
+      SetStart(start);
     }
     return CacheImpl<A>::Start();
   }
@@ -194,34 +194,34 @@ class FactorWeightFstImpl
                  : (Weight) Times(e.weight, fst_->Final(e.state));
       FactorIterator f(w);
       if (w != Weight::Zero() && f.Done())
-        this->SetFinal(s, w);
+        SetFinal(s, w);
       else
-        this->SetFinal(s, Weight::Zero());
+        SetFinal(s, Weight::Zero());
     }
     return CacheImpl<A>::Final(s);
   }
 
   size_t NumArcs(StateId s) {
     if (!HasArcs(s))
-      this->Expand(s);
+      Expand(s);
     return CacheImpl<A>::NumArcs(s);
   }
 
   size_t NumInputEpsilons(StateId s) {
     if (!HasArcs(s))
-      this->Expand(s);
+      Expand(s);
     return CacheImpl<A>::NumInputEpsilons(s);
   }
 
   size_t NumOutputEpsilons(StateId s) {
     if (!HasArcs(s))
-      this->Expand(s);
+      Expand(s);
     return CacheImpl<A>::NumOutputEpsilons(s);
   }
 
   void InitArcIterator(StateId s, ArcIteratorData<A> *data) {
     if (!HasArcs(s))
-      this->Expand(s);
+      Expand(s);
     CacheImpl<A>::InitArcIterator(s, data);
   }
 
@@ -263,13 +263,13 @@ class FactorWeightFstImpl
         FactorIterator fit(w);
         if (final_only_ || fit.Done()) {
           StateId d = FindState(Element(arc.nextstate, Weight::One()));
-          this->AddArc(s, Arc(arc.ilabel, arc.olabel, w, d));
+          AddArc(s, Arc(arc.ilabel, arc.olabel, w, d));
         } else {
           for (; !fit.Done(); fit.Next()) {
             const pair<Weight, Weight> &p = fit.Value();
             StateId d = FindState(Element(arc.nextstate,
                                           p.second.Quantize(delta_)));
-            this->AddArc(s, Arc(arc.ilabel, arc.olabel, p.first, d));
+            AddArc(s, Arc(arc.ilabel, arc.olabel, p.first, d));
           }
         }
       }
@@ -285,10 +285,10 @@ class FactorWeightFstImpl
         const pair<Weight, Weight> &p = fit.Value();
         StateId d = FindState(Element(kNoStateId,
                                       p.second.Quantize(delta_)));
-        this->AddArc(s, Arc(0, 0, p.first, d));
+        AddArc(s, Arc(0, 0, p.first, d));
       }
     }
-    this->SetArcs(s);
+    SetArcs(s);
   }
 
  private:

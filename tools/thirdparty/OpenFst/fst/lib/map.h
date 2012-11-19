@@ -294,7 +294,7 @@ class MapFstImpl : public CacheImpl<B> {
 
   StateId Start() {
     if (!HasStart())
-      this->SetStart(FindOState(fst_->Start()));
+      SetStart(FindOState(fst_->Start()));
     return CacheImpl<B>::Start();
   }
 
@@ -306,24 +306,24 @@ class MapFstImpl : public CacheImpl<B> {
           B final_arc = (*mapper_)(A(0, 0, fst_->Final(FindIState(s)),
                                         kNoStateId));
           CHECK(final_arc.ilabel == 0 && final_arc.olabel == 0);
-          this->SetFinal(s, final_arc.weight);
+          SetFinal(s, final_arc.weight);
           break;
         }
         case MAP_ALLOW_SUPERFINAL: {
           if (s == superfinal_) {
-            this->SetFinal(s, Weight::One());
+            SetFinal(s, Weight::One());
           } else {
             B final_arc = (*mapper_)(A(0, 0, fst_->Final(FindIState(s)),
                                           kNoStateId));
             if (final_arc.ilabel == 0 && final_arc.olabel == 0)
-              this->SetFinal(s, final_arc.weight);
+              SetFinal(s, final_arc.weight);
             else
-              this->SetFinal(s, Weight::Zero());
+              SetFinal(s, Weight::Zero());
           }
           break;
         }
         case MAP_REQUIRE_SUPERFINAL: {
-          this->SetFinal(s, s == superfinal_ ? Weight::One() : Weight::Zero());
+          SetFinal(s, s == superfinal_ ? Weight::One() : Weight::Zero());
           break;
         }
       }
@@ -333,38 +333,38 @@ class MapFstImpl : public CacheImpl<B> {
 
   size_t NumArcs(StateId s) {
     if (!HasArcs(s))
-      this->Expand(s);
+      Expand(s);
     return CacheImpl<B>::NumArcs(s);
   }
 
   size_t NumInputEpsilons(StateId s) {
     if (!HasArcs(s))
-      this->Expand(s);
+      Expand(s);
     return CacheImpl<B>::NumInputEpsilons(s);
   }
 
   size_t NumOutputEpsilons(StateId s) {
     if (!HasArcs(s))
-      this->Expand(s);
+      Expand(s);
     return CacheImpl<B>::NumOutputEpsilons(s);
   }
 
   void InitArcIterator(StateId s, ArcIteratorData<B> *data) {
     if (!HasArcs(s))
-      this->Expand(s);
+      Expand(s);
     CacheImpl<B>::InitArcIterator(s, data);
   }
 
   void Expand(StateId s) {
     // Add exiting arcs.
-    if (s == superfinal_) { this->SetArcs(s); return; }
+    if (s == superfinal_) { SetArcs(s); return; }
 
     for (ArcIterator< Fst<A> > aiter(*fst_, FindIState(s));
          !aiter.Done(); aiter.Next()) {
       A aarc(aiter.Value());
-      aarc.nextstate = this->FindOState(aarc.nextstate);
+      aarc.nextstate = FindOState(aarc.nextstate);
       const B& barc = (*mapper_)(aarc);
-      this->AddArc(s, barc);
+      AddArc(s, barc);
     }
 
     // Check for superfinal arcs.
@@ -380,7 +380,7 @@ class MapFstImpl : public CacheImpl<B> {
             if (superfinal_ == kNoStateId)
               superfinal_ = nstates_++;
             final_arc.nextstate = superfinal_;
-            this->AddArc(s, final_arc);
+            AddArc(s, final_arc);
           }
           break;
         }
@@ -389,26 +389,26 @@ class MapFstImpl : public CacheImpl<B> {
                                       kNoStateId));
         if (final_arc.ilabel != 0 || final_arc.olabel != 0 ||
             final_arc.weight != B::Weight::Zero())
-          this->AddArc(s, B(final_arc.ilabel, final_arc.olabel,
+          AddArc(s, B(final_arc.ilabel, final_arc.olabel,
                       final_arc.weight, superfinal_));
         break;
       }
     }
-    this->SetArcs(s);
+    SetArcs(s);
   }
 
  private:
   void Init() {
-    this->SetType("map");
-    this->SetInputSymbols(fst_->InputSymbols());
-    this->SetOutputSymbols(fst_->OutputSymbols());
+    SetType("map");
+    SetInputSymbols(fst_->InputSymbols());
+    SetOutputSymbols(fst_->OutputSymbols());
     if (fst_->Start() == kNoStateId) {
       final_action_ = MAP_NO_SUPERFINAL;
-      this->SetProperties(kNullProperties);
+      SetProperties(kNullProperties);
     } else {
       final_action_ = mapper_->FinalAction();
       uint64 props = fst_->Properties(kCopyProperties, false);
-      this->SetProperties(mapper_->Properties(props));
+      SetProperties(mapper_->Properties(props));
       if (final_action_ == MAP_REQUIRE_SUPERFINAL)
         superfinal_ = 0;
     }
