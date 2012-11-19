@@ -25,8 +25,7 @@ LOCAL_STATIC_LIBRARIES := \
         libESR_Portable
 
 LOCAL_SHARED_LIBRARIES := \
-        liblog \
-        libmedia
+        liblog
 
 LOCAL_MODULE:= libSR_AudioIn
 
